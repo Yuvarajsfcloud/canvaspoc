@@ -1,50 +1,102 @@
 const express = require("express");
 const session = require("express-session");
+const passport = require("passport");
+const Auth0Strategy = require("passport-auth0");
+const path = require("path");
+
 const app = express();
 
-// Session for fake SSO
+// ====== ENV VARS =======
+const auth0Domain = process.env.AUTH0_DOMAIN;
+const clientID = process.env.AUTH0_CLIENT_ID;
+const clientSecret = process.env.AUTH0_CLIENT_SECRET;
+const callbackURL = process.env.CALLBACK_URL;
+
+// ====== SESSION =======
 app.use(
   session({
-    secret: "canvas-poc-secret",
+    secret: process.env.SESSION_SECRET || "canvas-poc-secret",
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax"
+    }
   })
 );
 
+// ===== PASSPORT SETUP =====
+passport.use(
+  new Auth0Strategy(
+    {
+      domain: auth0Domain,
+      clientID: clientID,
+      clientSecret: clientSecret,
+      callbackURL: callbackURL
+    },
+    (accessToken, refreshToken, extraParams, profile, done) => {
+      return done(null, profile);
+    }
+  )
+);
+
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 // ===== TOP-LEVEL LOGIN =====
-app.get("/login", (req, res) => {
-  req.session.user = { name: "POC User" };  // fake login
+app.get("/login", passport.authenticate("auth0", {
+  scope: "openid profile email"
+}));
+
+// ===== AUTH0 CALLBACK =====
+app.get("/callback",
+  passport.authenticate("auth0", { failureRedirect: "/error" }),
+  (req, res) => {
+    res.redirect("/home");
+  }
+);
+
+// ===== HOME PAGE (AFTER LOGIN) =====
+app.get("/home", (req, res) => {
+  if (!req.user) return res.redirect("/login");
+
   res.send(`
-    <h1>User logged in</h1>
-    <p>You now have a valid session.</p>
-    <a href="/canvas" target="_blank">Open Canvas Page</a>
+    <h1>Welcome ${req.user.displayName}</h1>
+    <p>Authenticated with Auth0 successfully.</p>
+    <a href="/canvas" target="_blank">Open Canvas App</a>
   `);
 });
 
 // ===== CANVAS ENDPOINT =====
 app.get("/canvas", (req, res) => {
-  if (!req.session.user) {
-    // IMPORTANT: No redirect inside iframe
+  if (!req.user) {
     return res.send(`
-      <h3>Canvas Loaded Without Login</h3>
-      <p>No SSO session detected.</p>
-      <p>Please open: <a href="/login" target="_blank">/login</a> before loading Canvas.</p>
+      <h2>Canvas Loaded</h2>
+      <p>No Auth0 session detected.</p>
+      <a href="/login" target="_blank">Log in via Auth0</a>
     `);
   }
 
   res.send(`
-    <h3>Canvas App Loaded</h3>
-    <p>User: ${req.session.user.name}</p>
-    <p>This simulates your external app being authenticated already.</p>
+    <h2>Canvas External App</h2>
+    <p>User: ${req.user.displayName}</p>
   `);
 });
 
-// Allow embedding
+// ===== ALLOW IFRAME EMBEDDING =====
 app.use((req, res, next) => {
   res.setHeader("X-Frame-Options", "ALLOWALL");
   next();
 });
 
-//app.listen(3000, () => console.log("Canvas POC Running"));
+// ===== ROOT =====
+app.get("/", (req, res) => {
+  res.redirect("/home");
+});
+
+// ===== RENDER PORT =====
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Canvas POC running on ${PORT}`));
+app.listen(PORT, () => console.log("Auth0 Canvas POC running on port " + PORT));
