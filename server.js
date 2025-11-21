@@ -21,7 +21,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: true,
-      sameSite: "none"     // <-- REQUIRED for Canvas
+      sameSite: "lax"     // <-- REQUIRED for Canvas
     }
   })
 );
