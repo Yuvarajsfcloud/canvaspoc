@@ -73,19 +73,33 @@ app.get("/home", (req, res) => {
 
 // ===== CANVAS ENDPOINT =====
 app.get("/canvas", (req, res) => {
-  if (!req.user) {
-    return res.send(`
-      <h2>Canvas Loaded</h2>
-      <p>No Auth0 session detected.</p>
-      <a href="/login" target="_blank">Log in via Auth0</a>
-    `);
-  }
-
   res.send(`
-    <h2>Canvas External App</h2>
-    <p>User: ${req.user.displayName}</p>
+    <h1>Canvas SSO via Auth0 Silent Authentication</h1>
+
+    <iframe id="auth0frame"
+      src="https://${process.env.AUTH0_DOMAIN}/authorize?
+            client_id=${process.env.AUTH0_CLIENT_ID}
+            &response_type=token
+            &prompt=none
+            &redirect_uri=https://canvaspoc.onrender.com/canvas/silent"
+      style="display:none;">
+    </iframe>
+
+    <script>
+      window.addEventListener("message", function(e) {
+        const params = new URLSearchParams(e.data);
+        const accessToken = params.get("access_token");
+
+        if (accessToken) {
+          document.body.innerHTML += "<p>Authenticated!</p>";
+        } else {
+          document.body.innerHTML += "<p>Not authenticated – please log in first.</p>";
+        }
+      });
+    </script>
   `);
 });
+
 
 // ===== CANVAS ENDPOINT =====
 app.get("/error", (req, res) => {
