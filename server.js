@@ -20,10 +20,12 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      sameSite: "lax"
+      secure: true,
+      sameSite: "none"     // <-- REQUIRED for Canvas
     }
   })
 );
+
 
 // ===== PASSPORT SETUP =====
 passport.use(
