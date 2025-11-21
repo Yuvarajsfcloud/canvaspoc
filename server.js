@@ -89,12 +89,14 @@ app.get("/canvas", (req, res) => {
 
 // ===== CANVAS ENDPOINT =====
 app.get("/error", (req, res) => {
-  res.status(401).send(`
-    <h2>Login failed or Auth0 callback failed.</h2>
-    <p>Check your Auth0 logs for details.</p>
-    <a href="/login">Try again</a>
+  console.log("Auth0 Error => ", req.query);
+  res.send(`
+    <h1>Auth0 Login Error</h1>
+    <pre>${JSON.stringify(req.query, null, 2)}</pre>
+    <a href="/login">Try Again</a>
   `);
 });
+
 
 
 // ===== ALLOW IFRAME EMBEDDING =====
