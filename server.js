@@ -45,4 +45,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.listen(3000, () => console.log("Canvas POC Running"));
+//app.listen(3000, () => console.log("Canvas POC Running"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Canvas POC running on ${PORT}`));
