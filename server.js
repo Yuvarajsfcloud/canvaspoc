@@ -87,6 +87,16 @@ app.get("/canvas", (req, res) => {
   `);
 });
 
+// ===== CANVAS ENDPOINT =====
+app.get("/error", (req, res) => {
+  res.status(401).send(`
+    <h2>Login failed or Auth0 callback failed.</h2>
+    <p>Check your Auth0 logs for details.</p>
+    <a href="/login">Try again</a>
+  `);
+});
+
+
 // ===== ALLOW IFRAME EMBEDDING =====
 app.use((req, res, next) => {
   res.setHeader("X-Frame-Options", "ALLOWALL");
