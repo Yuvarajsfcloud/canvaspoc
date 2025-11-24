@@ -73,20 +73,20 @@ app.get("/home", (req, res) => {
 
 // ===== CANVAS ENDPOINT =====
 app.get("/canvas", (req, res) => {
+  const authUrl = `https://${process.env.AUTH0_DOMAIN}/authorize?client_id=${process.env.AUTH0_CLIENT_ID}&response_type=token&prompt=none&redirect_uri=${process.env.CALLBACK_URL}/canvas/silent`;
+  
   res.send(`
     <h1>Canvas SSO via Auth0 Silent Authentication</h1>
 
     <iframe id="auth0frame"
-      src="https://${process.env.AUTH0_DOMAIN}/authorize?
-            client_id=${process.env.AUTH0_CLIENT_ID}
-            &response_type=token
-            &prompt=none
-            &redirect_uri=https://canvaspoc.onrender.com/canvas/silent"
+      src="${authUrl}"
       style="display:none;">
     </iframe>
 
     <script>
       window.addEventListener("message", function(e) {
+        if (e.origin !== window.location.origin) return;
+        
         const params = new URLSearchParams(e.data);
         const accessToken = params.get("access_token");
 
@@ -96,6 +96,16 @@ app.get("/canvas", (req, res) => {
           document.body.innerHTML += "<p>Not authenticated – please log in first.</p>";
         }
       });
+    </script>
+  `);
+});
+
+// ===== CANVAS SILENT CALLBACK =====
+app.get("/canvas/silent", (req, res) => {
+  res.send(`
+    <script>
+      const hash = window.location.hash.substring(1);
+      window.parent.postMessage(hash, window.location.origin);
     </script>
   `);
 });
