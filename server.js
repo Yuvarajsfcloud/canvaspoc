@@ -73,20 +73,25 @@ app.get("/home", (req, res) => {
 
 // ===== CANVAS ENDPOINT =====
 app.get("/canvas", (req, res) => {
-  const authUrl = `https://${process.env.AUTH0_DOMAIN}/authorize?client_id=${process.env.AUTH0_CLIENT_ID}&response_type=token&prompt=none&redirect_uri=${process.env.CALLBACK_URL}/canvas/silent`;
+  const silentAuthUrl = `https://${process.env.AUTH0_DOMAIN}/authorize?client_id=${process.env.AUTH0_CLIENT_ID}&response_type=token&prompt=none&redirect_uri=${encodeURIComponent(process.env.CALLBACK_URL + '/canvas/silent')}`;
   
   res.send(`
     <h1>Canvas SSO via Auth0 Silent Authentication</h1>
 
     <iframe id="auth0frame"
-      src="${authUrl}"
+      src="${silentAuthUrl}"
       style="display:none;">
     </iframe>
 
     <script>
+      let messageReceived = false;
+
       window.addEventListener("message", function(e) {
+        if (messageReceived) return; // Prevent duplicate processing
         if (e.origin !== window.location.origin) return;
         
+        messageReceived = true;
+
         const params = new URLSearchParams(e.data);
         const accessToken = params.get("access_token");
 
@@ -95,7 +100,7 @@ app.get("/canvas", (req, res) => {
         } else {
           document.body.innerHTML += "<p>Not authenticated – please log in first.</p>";
         }
-      });
+      }, { once: true }); // Use 'once' option to auto-remove after first call
     </script>
   `);
 });
