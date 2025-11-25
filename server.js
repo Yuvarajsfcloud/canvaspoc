@@ -73,7 +73,7 @@ app.get("/home", (req, res) => {
 
 // ===== CANVAS ENDPOINT =====
 app.get("/canvas", (req, res) => {
-  const silentAuthUrl = `https://${process.env.AUTH0_DOMAIN}/authorize?client_id=${process.env.AUTH0_CLIENT_ID}&response_type=token&prompt=none&redirect_uri=${encodeURIComponent(process.env.CALLBACK_URL + '/canvas/silent')}`;
+  const silentAuthUrl = `https://${process.env.AUTH0_DOMAIN}/authorize?client_id=${process.env.AUTH0_CLIENT_ID}&response_type=token&prompt=none&redirect_uri=${encodeURIComponent(process.env.CALLBACK_URL)}`;
   
   res.send(`
     <h1>Canvas SSO via Auth0 Silent Authentication</h1>
