@@ -88,7 +88,7 @@ app.get("/canvas/silent", (req, res) => {
 
 // ====== CANVAS ENDPOINT (GET + POST) ======
 function renderCanvasHtml() {
-  const silentRedirect = `${baseUrl}/canvas/silent`;
+  const silentRedirect = callbackURL;
 
   const authUrl =
     `https://${auth0Domain}/authorize` +
