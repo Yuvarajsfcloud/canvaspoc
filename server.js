@@ -117,6 +117,7 @@ function renderCanvasHtml() {
         window.addEventListener("message", function(e) {
           const params = new URLSearchParams(e.data);
           const accessToken = params.get("access_token");
+          console.log('access token received'+accessToken);
           const error = params.get("error");
 
           const status = document.getElementById("status");
