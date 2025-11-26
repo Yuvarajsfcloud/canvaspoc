@@ -124,13 +124,27 @@ function renderCanvasHtml() {
 
           if (error === "login_required") {
             status.innerText = "No active Auth0 session.";
+            details.innerHTML = "<p>Please log in to Auth0 first.</p>
+    <p>
+      <a href="/home" target="_blank">➡️ Click here to log in</a>
+    </p>
+    <p>
+      After login, <a href="#" onclick="location.reload()">reload Canvas</a>
+    </p>";
+
             details.innerHTML = "<p>Please login using <b>/home</b> first, then reload Canvas.</p>";
             return;
           }
 
           if (accessToken) {
-            status.innerText = "Authenticated via Auth0 Silent SSO!";
-            details.innerHTML = "<p>Access Token received (hidden for security).</p>";
+
+          details.innerHTML = "<p>
+    <a href="/logout-auth0" target="_blank">Logout from Auth0</a> (for testing)
+  </p>
+  <p>
+    <a href="/home" target="_blank">Go to Home Page</a>
+  </p>";
+
           } else {
             status.innerText = "Silent SSO failed.";
             details.innerHTML = "<p>No token returned.</p>";
@@ -147,6 +161,14 @@ app.get("/canvas", (req, res) => res.send(renderCanvasHtml()));
 app.post("/canvas", express.urlencoded({ extended: true }), (req, res) =>
   res.send(renderCanvasHtml())
 );
+
+app.get("/logout-auth0", (req, res) => {
+  const returnTo = `${process.env.BASE_URL}/home`;
+  res.redirect(
+    `https://${process.env.AUTH0_DOMAIN}/v2/logout?client_id=${process.env.AUTH0_CLIENT_ID}&returnTo=${encodeURIComponent(returnTo)}`
+  );
+});
+
 
 // ===== ERROR SCREEN =====
 app.get("/error", (req, res) => {
