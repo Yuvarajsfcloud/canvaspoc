@@ -123,19 +123,18 @@ function renderCanvasHtml() {
           const status = document.getElementById("status");
           const details = document.getElementById("details");
 
-          if (error === "login_required") {
-            status.innerText = "No active Auth0 session.";
-            details.innerHTML = "
-              <p>Please log in to Auth0 first.</p>
-              <p><a href="/home" target="_blank">Click here to log in</a></p>
-              <p><a id="canvasReloadLink" href="#">Reload Canvas</a></p>";
-            return;
-          }
+  if (error === "login_required") {
+    status.innerText = "No active Auth0 session.";
+    details.innerHTML = `<p>Please log in to Auth0 first.</p>
+      <p><a href="/home" target="_blank">Click here to log in</a></p>
+      <p><a id="canvasReloadLink" href="#">Reload Canvas</a></p>`;
+    return;
+  }
 
           if (accessToken) {
             status.innerText = "Authenticated via Auth0 Silent SSO.";
-            details.innerHTML = "<p><a href="/logout-auth0" target="_blank">Logout from Auth0</a></p>
-              <p><a href="/home" target="_blank">Go to Home Page</a></p>";
+            details.innerHTML = `<p><a href="/logout-auth0" target="_blank">Logout from Auth0</a></p>
+              <p><a href="/home" target="_blank">Go to Home Page</a></p>`;
           }
 
         });
