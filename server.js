@@ -146,10 +146,10 @@ function renderCanvasHtml() {
 
 app.get("/canvas", (req, res) => res.send(renderCanvasHtml()));
 
-app.post("/canvas", express.urlencoded({ extended: true }), (req, res) =>
+/*app.post("/canvas", express.urlencoded({ extended: true }), (req, res) =>
   res.send(renderCanvasHtml())
 );
-
+*/
 app.get("/logout-auth0", (req, res) => {
   const returnTo = `${process.env.BASE_URL}/home`;
   res.redirect(
