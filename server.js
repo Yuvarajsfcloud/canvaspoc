@@ -69,6 +69,10 @@ app.get("/home", (req, res) => {
     <h1>Welcome ${req.user.displayName}</h1>
     <p>Authenticated with Auth0 successfully (standalone flow).</p>
     <a href="/canvas" target="_blank">Test Canvas</a>
+    <script>
+      window.opener.postMessage("auth-success", "*");
+      window.close();
+    </script>
   `);
 });
 
