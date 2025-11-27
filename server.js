@@ -11,12 +11,6 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(session(...));
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-
 
 // ====== ENV VARS =======
 const auth0Domain = process.env.AUTH0_DOMAIN;
