@@ -181,7 +181,7 @@ app.post("/canvas", (req, res) => {
     console.log("Body received:", req.body);
 
   // 1️⃣ Validate Salesforce signed_request
-   try {
+  /* try {
         context = parseSignedRequest(
             req.body.signed_request,
             process.env.CANVAS_CONSUMER_SECRET
@@ -189,7 +189,7 @@ app.post("/canvas", (req, res) => {
     } catch (err) {
         console.error("Canvas signature invalid:", err);
         return res.status(400).send("Invalid Canvas Request");
-    }
+    }*/
 
   // 2️⃣ Check external session (Auth0 cookie)
   if (!req.isAuthenticated()) {
