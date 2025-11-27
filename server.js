@@ -11,7 +11,7 @@ const clientID = process.env.AUTH0_CLIENT_ID;
 const clientSecret = process.env.AUTH0_CLIENT_SECRET;
 const callbackURL = process.env.CALLBACK_URL; // standalone callback (/callback)
 const baseUrl = process.env.BASE_URL;  
-const callbackURL1 = baseUrl+'home';        // ex: https://canvaspoc.onrender.com
+const callbackURL1 = 'https://canvaspoc.onrender.com/home';        // ex: https://canvaspoc.onrender.com
 
 // ====== SESSION (STANDALONE ONLY) =======
 app.use(
