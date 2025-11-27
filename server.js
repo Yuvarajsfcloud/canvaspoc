@@ -3,7 +3,18 @@ const session = require("express-session");
 const passport = require("passport");
 const Auth0Strategy = require("passport-auth0");
 
+const path = require("path");
+require("dotenv").config();
+const canvasSdk = require("salesforce-canvas-js");
+
 const app = express();
+
+// ======================================================
+//  MIDDLEWARE
+// ======================================================
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 
 // ====== ENV VARS =======
 const auth0Domain = process.env.AUTH0_DOMAIN;
@@ -77,7 +88,7 @@ app.get("/home", (req, res) => {
 });
 
 // ====== SILENT AUTH CALLBACK FOR CANVAS ======
-app.get("/canvas/silent", (req, res) => {
+/*app.get("/canvas/silent", (req, res) => {
   res.send(`
     <!DOCTYPE html>
     <html>
@@ -90,7 +101,7 @@ app.get("/canvas/silent", (req, res) => {
     </html>
   `);
 });
-
+*/
 // ====== CANVAS ENDPOINT (GET + POST) ======
 function renderCanvasHtml() {
   const silentRedirect = callbackURL;
@@ -162,7 +173,39 @@ function renderCanvasHtml() {
   `;
 }
 
-app.get("/canvas", (req, res) => res.send(renderCanvasHtml()));
+//app.get("/canvas", (req, res) => res.send(renderCanvasHtml()));
+// ======================================================
+//  CANVAS ROUTE — NO AUTH LOGIC, NO REDIRECTS HERE
+// ======================================================
+app.post("/canvas", (req, res) => {
+  let context;
+
+  // 1️⃣ Validate Salesforce signed_request
+  try {
+    context = canvasSdk.request.validate(
+      req.body.signed_request,
+      process.env.CANVAS_CONSUMER_SECRET
+    );
+  } catch (err) {
+    console.error("Invalid Canvas signed_request", err);
+    return res.status(400).send("Invalid Canvas Request");
+  }
+
+  // 2️⃣ Check external session (Auth0 cookie)
+  if (!req.isAuthenticated()) {
+    return res.status(401).send("External session expired. Please login again.");
+  }
+
+  // 3️⃣ Render Canvas UI
+  res.send(`
+      <h2>Canvas Loaded</h2>
+      <p>Salesforce User: ${context.userContext.userName}</p>
+      <p>External User: ${req.user.displayName || req.user.nickname}</p>
+
+      <button onclick="Sfdc.canvas.client.autogrow()">Resize Canvas</button>
+  `);
+});
+
 
 /*app.post("/canvas", express.urlencoded({ extended: true }), (req, res) =>
   res.send(renderCanvasHtml())
