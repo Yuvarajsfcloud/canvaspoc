@@ -178,6 +178,8 @@ function renderCanvasHtml() {
 app.post("/canvas", (req, res) => {
   let context;
 
+    console.log("Body received:", req.body);
+
   // 1️⃣ Validate Salesforce signed_request
    try {
         context = parseSignedRequest(
