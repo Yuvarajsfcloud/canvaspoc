@@ -4,7 +4,6 @@ const passport = require("passport");
 const Auth0Strategy = require("passport-auth0");
 
 const path = require("path");
-require("dotenv").config();
 const canvasSdk = require("salesforce-canvas-js");
 
 const app = express();
