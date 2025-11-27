@@ -34,7 +34,7 @@ passport.use(
       domain: auth0Domain,
       clientID: clientID,
       clientSecret: clientSecret,
-      callbackURL: callbackURL,
+      callbackURL: callbackURL1,
     },
     (accessToken, refreshToken, extraParams, profile, done) => {
       return done(null, profile);
