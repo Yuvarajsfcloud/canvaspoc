@@ -10,7 +10,8 @@ const auth0Domain = process.env.AUTH0_DOMAIN;
 const clientID = process.env.AUTH0_CLIENT_ID;
 const clientSecret = process.env.AUTH0_CLIENT_SECRET;
 const callbackURL = process.env.CALLBACK_URL; // standalone callback (/callback)
-const baseUrl = process.env.BASE_URL;         // ex: https://canvaspoc.onrender.com
+const baseUrl = process.env.BASE_URL;  
+const callbackURL1 = baseUrl+'/home';        // ex: https://canvaspoc.onrender.com
 
 // ====== SESSION (STANDALONE ONLY) =======
 app.use(
@@ -91,12 +92,12 @@ function renderCanvasHtml() {
   const silentRedirect = callbackURL;
 
   const authUrl =
-    `https://${auth0Domain}/authorize` +
-    `?client_id=${encodeURIComponent(clientID)}` +
-    `&response_type=token` +
-    `&scope=openid%20profile%20email` +
-    `&prompt=none` +
-    `&redirect_uri=${encodeURIComponent(silentRedirect)}`;
+      `https://${auth0Domain}/authorize` +
+      `?client_id=${encodeURIComponent(clientID)}` +
+      `&response_type=token` +
+      `&scope=openid%20profile%20email` +
+      `&prompt=none` +
+      `&redirect_uri=${encodeURIComponent(callbackURL1)}`;
 
   return `
     <!DOCTYPE html>
