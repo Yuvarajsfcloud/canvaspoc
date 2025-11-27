@@ -180,15 +180,15 @@ app.post("/canvas", (req, res) => {
   let context;
 
   // 1️⃣ Validate Salesforce signed_request
-  try {
-    context = canvasSdk.request.validate(
-      req.body.signed_request,
-      process.env.CANVAS_CONSUMER_SECRET
-    );
-  } catch (err) {
-    console.error("Invalid Canvas signed_request", err);
-    return res.status(400).send("Invalid Canvas Request");
-  }
+   try {
+        context = parseSignedRequest(
+            req.body.signed_request,
+            process.env.CANVAS_CONSUMER_SECRET
+        );
+    } catch (err) {
+        console.error("Canvas signature invalid:", err);
+        return res.status(400).send("Invalid Canvas Request");
+    }
 
   // 2️⃣ Check external session (Auth0 cookie)
   if (!req.isAuthenticated()) {
@@ -234,6 +234,34 @@ app.use((req, res, next) => {
 
 // ===== ROOT =====
 app.get("/", (req, res) => res.redirect("/home"));
+
+const crypto = require("crypto");
+
+function parseSignedRequest(signedRequest, consumerSecret) {
+    const [encodedSig, payload] = signedRequest.split(".");
+
+    const sig = base64urlDecode(encodedSig);
+    const data = JSON.parse(base64urlDecode(payload));
+
+    const expectedSig = crypto
+        .createHmac("sha256", consumerSecret)
+        .update(payload)
+        .digest();
+
+    if (Buffer.compare(sig, expectedSig) !== 0) {
+        throw new Error("Invalid Canvas signature");
+    }
+
+    return data;
+}
+
+function base64urlDecode(str) {
+    return Buffer.from(
+        str.replace(/-/g, "+").replace(/_/g, "/"),
+        "base64"
+    );
+}
+
 
 // ===== START SERVER =====
 const PORT = process.env.PORT || 3000;
