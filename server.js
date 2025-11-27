@@ -135,8 +135,10 @@ function renderCanvasHtml() {
 
           if (accessToken) {
             status.innerText = "Authenticated via Auth0 Silent SSO.";
-            details.innerHTML = \'<p><a href="/logout-auth0" target="_blank">Logout from Auth0</a></p>
-              <p><a href="/home" target="_blank">Go to Home Page</a></p>\`;
+            details.innerHTML = \'
+            <p><a href="/logout-auth0" target="_blank">Logout from Auth0</a></p>
+            <p><a href="/home" target="_blank">Go to Home Page</a></p>
+          \`;
           }
 
         });
