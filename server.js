@@ -6,6 +6,7 @@ const Auth0Strategy = require("passport-auth0");
 const path = require("path");
 
 const app = express();
+const cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
