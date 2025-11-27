@@ -7,11 +7,15 @@ const path = require("path");
 
 const app = express();
 
-// ======================================================
-//  MIDDLEWARE
-// ======================================================
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use(session(...));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 
 
 // ====== ENV VARS =======
@@ -30,8 +34,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      sameSite: "lax"
-      // secure: true   // optional: requires HTTPS
+      sameSite: "lax",
+       secure: false   // optional: requires HTTPS
     }
   })
 );
@@ -177,7 +181,10 @@ function renderCanvasHtml() {
 // ======================================================
 app.post("/canvas", (req, res) => {
   let context;
-
+    console.log("Cookies:", req.headers.cookie);
+console.log("Session Exists:", req.session);
+console.log("Passport User:", req.session.passport);
+console.log("Authenticated:", req.isAuthenticated());
     console.log("Body received:", req.body);
 
   // 1️⃣ Validate Salesforce signed_request
