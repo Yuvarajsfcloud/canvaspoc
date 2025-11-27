@@ -130,13 +130,15 @@ function renderCanvasHtml() {
               <p><a href="/home" target="_blank">Click here to log in</a></p>
               <p><a id="canvasReloadLink" href="#">Reload Canvas</a></p>
                \`;
-              <script>
-              document.getElementById('canvasReloadLink').onclick = function (e) {
-                e.preventDefault();
-                window.location.reload();
+              // Attach the event AFTER the HTML is added
+              const reloadLink = document.getElementById("canvasReloadLink");
+              if (reloadLink) {
+                reloadLink.addEventListener("click", function (e) {
+                  e.preventDefault();
+                  window.location.reload();
+                });
               }
-              </script>
-           
+                      
             return;
           }
 
