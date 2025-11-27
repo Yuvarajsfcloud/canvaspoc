@@ -129,7 +129,14 @@ function renderCanvasHtml() {
               <p>Please log in to Auth0 first.</p>
               <p><a href="/home" target="_blank">Click here to log in</a></p>
               <p><a id="canvasReloadLink" href="#">Reload Canvas</a></p>
-            \`;
+               \`;
+              <script>
+              document.getElementById('canvasReloadLink').onclick = function (e) {
+                e.preventDefault();
+                window.location.reload();
+              }
+              </script>
+           
             return;
           }
 
@@ -157,7 +164,7 @@ app.get("/canvas", (req, res) => res.send(renderCanvasHtml()));
 app.get("/logout-auth0", (req, res) => {
   const returnTo = `${process.env.BASE_URL}/home`;
   res.redirect(
-    `https://${process.env.AUTH0_DOMAIN}/v2/logout?client_id=${process.env.AUTH0_CLIENT_ID}&returnTo=${encodeURIComponent(returnTo)}`
+    `https://${process.env.AUTH0_DOMAIN}/v2/logout`
   );
 });
 
